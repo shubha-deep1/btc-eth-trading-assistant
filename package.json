@@ -1,0 +1,18 @@
+{
+  "name": "tradedesk-btc-eth-backend",
+  "version": "2.0.0",
+  "private": true,
+  "description": "Optional secure backend for TradeDesk V2 AI commentary and read-only Delta Exchange account balance checks.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "check": "node --check server.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2"
+  }
+}

@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b1020">
+  <meta name="description" content="TradeDesk V2: BTC and ETH market signals, technical analysis, risk management, strategy backtesting and paper-trade journaling.">
+  <title>TradeDesk V2 | BTC & ETH Trading Assistant</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <main class="app-shell">
+    <header class="app-header">
+      <div>
+        <p class="eyebrow">PERSONAL MARKET TOOLKIT · V2</p>
+        <h1>Trade<span>Desk</span></h1>
+        <p class="subtitle">Read the market. Test the setup. Control the risk.</p>
+      </div>
+      <div class="header-badges">
+        <span class="badge">SIGNALS · BACKTESTING</span>
+        <span class="badge badge-green">PAPER MODE BY DEFAULT</span>
+      </div>
+    </header>
+
+    <nav class="quick-nav" aria-label="Page sections">
+      <a href="#market">Markets</a>
+      <a href="#signals">Signals & analysis</a>
+      <a href="#calculator">Risk calculator</a>
+      <a href="#backtest">Backtesting</a>
+      <a href="#journal">Journal</a>
+      <a href="#integrations">Integrations</a>
+    </nav>
+
+    <section id="market" class="market-grid" aria-label="Market overview">
+      <article class="card market-card">
+        <div class="card-topline"><p class="label">BITCOIN · BTC/USDT</p><span class="live-dot">● PUBLIC DATA</span></div>
+        <p class="market-price" id="btcPrice">Loading…</p>
+        <p class="market-change" id="btcChange">Fetching public market data</p>
+        <div class="market-meta"><span>24h high <strong id="btcHigh">—</strong></span><span>24h low <strong id="btcLow">—</strong></span></div>
+      </article>
+      <article class="card market-card">
+        <div class="card-topline"><p class="label">ETHEREUM · ETH/USDT</p><span class="live-dot">● PUBLIC DATA</span></div>
+        <p class="market-price" id="ethPrice">Loading…</p>
+        <p class="market-change" id="ethChange">Fetching public market data</p>
+        <div class="market-meta"><span>24h high <strong id="ethHigh">—</strong></span><span>24h low <strong id="ethLow">—</strong></span></div>
+      </article>
+    </section>
+    <p class="data-footnote" id="marketUpdated">Market data not loaded yet.</p>
+
+    <section id="signals" class="card">
+      <div class="section-heading">
+        <div><p class="label">SIGNAL ENGINE</p><h2>Automatic buy / sell setup detection</h2></div>
+        <span class="badge badge-purple">RULE-BASED · EXPLAINABLE</span>
+      </div>
+      <p class="muted">This engine checks closed Binance candles using EMA 20/50, RSI, MACD and ATR. It can return BUY SETUP, SELL SETUP or WAIT. These are technical conditions, not guaranteed profitable predictions.</p>
+      <div class="control-grid signal-controls">
+        <div class="form-field"><label for="analysisSymbol">Market</label><select id="analysisSymbol"><option value="BTCUSDT">BTC/USDT</option><option value="ETHUSDT" selected>ETH/USDT</option></select></div>
+        <div class="form-field"><label for="analysisInterval">Timeframe</label><select id="analysisInterval"><option value="15m" selected>15 minutes</option><option value="1h">1 hour</option><option value="4h">4 hours</option></select></div>
+        <div class="form-field"><label for="analysisCandles">Candles to scan</label><select id="analysisCandles"><option value="100">100 candles</option><option value="250" selected>250 candles</option><option value="500">500 candles</option></select></div>
+        <div class="form-field action-field"><label>&nbsp;</label><button id="refreshAnalysis" class="button" type="button">Analyze market</button></div>
+      </div>
+
+      <p id="analysisUpdated" class="data-footnote">Analysis has not run yet.</p>
+      <div class="signal-hero">
+        <div class="signal-main">
+          <p class="label">CURRENT SETUP</p>
+          <h3 id="signalTitle">Waiting for analysis…</h3>
+          <p id="signalSummary" class="muted">Load market candles to calculate the current technical setup.</p>
+          <div id="signalTags" class="tag-row"><span class="tag">EMA 20/50</span><span class="tag">RSI 14</span><span class="tag">MACD 12/26/9</span><span class="tag">ATR 14</span></div>
+        </div>
+        <div class="signal-score-box"><span class="label">CONDITION SCORE</span><strong id="signalScore">—</strong><span id="signalScoreCaption" class="muted">Not a win probability</span></div>
+      </div>
+
+      <div class="stats-grid indicator-grid">
+        <div class="stat"><span>Current price</span><strong id="analysisPrice">—</strong></div>
+        <div class="stat"><span>EMA 20</span><strong id="ema20Value">—</strong></div>
+        <div class="stat"><span>EMA 50</span><strong id="ema50Value">—</strong></div>
+        <div class="stat"><span>RSI (14)</span><strong id="rsiValue">—</strong></div>
+        <div class="stat"><span>MACD histogram</span><strong id="macdValue">—</strong></div>
+        <div class="stat"><span>ATR (14)</span><strong id="atrValue">—</strong></div>
+      </div>
+
+      <div class="analysis-columns">
+        <div class="subpanel"><h3>What the indicators say</h3><ul id="reasonsList" class="reason-list"><li>Analysis has not run yet.</li></ul></div>
+        <div class="subpanel plan-panel"><h3>Illustrative trade plan</h3>
+          <div class="plan-row"><span>Direction</span><strong id="suggestedSide">—</strong></div>
+          <div class="plan-row"><span>Reference entry</span><strong id="suggestedEntry">—</strong></div>
+          <div class="plan-row"><span>Illustrative stop</span><strong id="suggestedStop">—</strong></div>
+          <div class="plan-row"><span>Illustrative target (2R)</span><strong id="suggestedTarget">—</strong></div>
+          <button id="useSignalButton" class="button button-secondary full-button" type="button" disabled>Load setup into risk calculator</button>
+        </div>
+      </div>
+      <p class="fine-print">The score measures how many configured rules agree. It is not a probability of profit. Signal updates use exchange candles that may be delayed, incomplete or unavailable.</p>
+    </section>
+
+    <section class="card chart-card">
+      <div><p class="label">CHART CONFIRMATION</p><h2>Open TradingView charts</h2><p class="muted">Use the selected timeframe to review structure, support/resistance, liquidity and volume before making a decision.</p></div>
+      <div class="button-row"><a class="button button-secondary" href="https://www.tradingview.com/chart/?symbol=BINANCE%3ABTCUSDT" target="_blank" rel="noopener noreferrer">BTC chart ↗</a><a class="button button-secondary" href="https://www.tradingview.com/chart/?symbol=BINANCE%3AETHUSDT" target="_blank" rel="noopener noreferrer">ETH chart ↗</a></div>
+    </section>
+
+    <section id="calculator" class="card">
+      <div class="section-heading"><div><p class="label">RISK MANAGEMENT</p><h2>Trade risk calculator</h2></div><span class="badge badge-green">NO REAL ORDERS</span></div>
+      <div class="form-grid">
+        <div class="form-field"><label for="symbol">Market</label><select id="symbol"><option>ETH/USDT</option><option>BTC/USDT</option></select></div>
+        <div class="form-field"><label for="side">Direction</label><select id="side"><option value="long">LONG</option><option value="short">SHORT</option></select></div>
+        <div class="form-field"><label for="capital">Account capital (₹)</label><input id="capital" type="number" min="0" step="any" value="1000"></div>
+        <div class="form-field"><label for="risk">Risk per trade (%)</label><input id="risk" type="number" min="0.1" max="5" step="0.1" value="1"></div>
+        <div class="form-field"><label for="entry">Entry price (USDT)</label><input id="entry" type="number" min="0" step="any" value="2500"></div>
+        <div class="form-field"><label for="stop">Stop loss (USDT)</label><input id="stop" type="number" min="0" step="any" value="2480"></div>
+        <div class="form-field"><label for="target">Take profit (USDT)</label><input id="target" type="number" min="0" step="any" value="2540"></div>
+        <div class="form-field"><label for="leverage">Leverage (planning only)</label><select id="leverage"><option value="1">1×</option><option value="2">2×</option><option value="3">3×</option><option value="5">5×</option><option value="10">10×</option><option value="20">20×</option><option value="50">50×</option><option value="75">75×</option></select></div>
+        <div class="form-field"><label for="fx">USD → INR estimate</label><input id="fx" type="number" min="1" step="any" value="88"></div>
+        <div class="form-field"><label for="fee">Fee estimate per side (%)</label><input id="fee" type="number" min="0" step="0.01" value="0.05"></div>
+      </div>
+      <div class="button-row"><button id="calcButton" class="button" type="button">Calculate plan</button><button id="livePriceButton" class="button button-secondary" type="button">Use live price</button></div>
+      <p id="calcMessage" class="status-message" role="status">Edit the values and calculate to see a risk-based position plan.</p>
+      <div class="stats-grid"><div class="stat"><span>Risk budget</span><strong id="riskOut">—</strong></div><div class="stat"><span>Reward / risk</span><strong id="rrOut">—</strong></div><div class="stat"><span>Position value</span><strong id="sizeOut">—</strong></div><div class="stat"><span>Estimated net target</span><strong id="profitOut">—</strong></div><div class="stat"><span>Estimated stop loss</span><strong id="lossOut">—</strong></div><div class="stat"><span>Estimated margin</span><strong id="marginOut">—</strong></div></div>
+      <p class="fine-print">Estimates only. Fees are approximate; funding, slippage, contract rules and liquidation mechanics are not fully modeled. Leverage does not reduce underlying price risk.</p>
+    </section>
+
+    <section id="backtest" class="card">
+      <div class="section-heading"><div><p class="label">HISTORICAL SIMULATION</p><h2>Strategy backtesting lab</h2></div><span class="badge badge-purple">HISTORICAL DATA · PAPER SIMULATION</span></div>
+      <p class="muted">Tests a simple EMA 9/21 crossover with an RSI filter, ATR-based stop, 2R target, estimated fees and slippage on public Binance candles. Results depend heavily on assumptions and are not a forecast.</p>
+      <div class="control-grid">
+        <div class="form-field"><label for="btSymbol">Market</label><select id="btSymbol"><option value="BTCUSDT">BTC/USDT</option><option value="ETHUSDT" selected>ETH/USDT</option></select></div>
+        <div class="form-field"><label for="btInterval">Timeframe</label><select id="btInterval"><option value="15m" selected>15 minutes</option><option value="1h">1 hour</option><option value="4h">4 hours</option></select></div>
+        <div class="form-field"><label for="btCandles">History length</label><select id="btCandles"><option value="300">300 candles</option><option value="500" selected>500 candles</option><option value="1000">1000 candles</option></select></div>
+        <div class="form-field"><label for="btCapital">Starting balance (USDT)</label><input id="btCapital" type="number" min="10" step="any" value="1000"></div>
+        <div class="form-field"><label for="btRisk">Risk per trade (%)</label><input id="btRisk" type="number" min="0.1" max="2" step="0.1" value="1"></div>
+        <div class="form-field"><label for="btLeverage">Simulated leverage cap</label><select id="btLeverage"><option value="1">1×</option><option value="2" selected>2×</option><option value="3">3×</option><option value="5">5×</option></select></div>
+        <div class="form-field"><label for="btFee">Fee per side (%)</label><input id="btFee" type="number" min="0" max="1" step="0.01" value="0.05"></div>
+        <div class="form-field action-field"><label>&nbsp;</label><button id="runBacktest" class="button" type="button">Run backtest</button></div>
+      </div>
+      <p id="btMessage" class="status-message" role="status">Choose the parameters and run a historical simulation.</p>
+      <div class="stats-grid backtest-stats">
+        <div class="stat"><span>Final balance</span><strong id="btFinal">—</strong></div><div class="stat"><span>Net return</span><strong id="btReturn">—</strong></div><div class="stat"><span>Closed trades</span><strong id="btCount">—</strong></div><div class="stat"><span>Win rate</span><strong id="btWinRate">—</strong></div><div class="stat"><span>Profit factor</span><strong id="btProfitFactor">—</strong></div><div class="stat"><span>Max drawdown</span><strong id="btDrawdown">—</strong></div>
+      </div>
+      <div class="chart-panel"><div class="chart-panel-heading"><h3>Simulated equity curve</h3><span class="muted">Balance after each closed trade</span></div><canvas id="equityCanvas" height="180" aria-label="Backtest equity curve"></canvas></div>
+      <div class="table-wrap"><table><thead><tr><th>Entry time</th><th>Side</th><th>Entry</th><th>Exit</th><th>Exit reason</th><th>Net P&amp;L</th><th>Balance</th></tr></thead><tbody id="btTradesBody"><tr><td class="empty-cell" colspan="7">No backtest run yet.</td></tr></tbody></table></div>
+      <p class="fine-print">Model limitations: no funding payments, liquidation simulation, order-book depth, exchange contract sizes, or precise execution latency. If one candle touches both stop and target, the backtester assumes the stop was hit first. This is deliberately conservative, but it does not make the test complete.</p>
+    </section>
+
+    <section id="journal" class="card">
+      <div class="section-heading"><div><p class="label">PROCESS & DISCIPLINE</p><h2>Paper-trade journal</h2></div><span class="badge" id="tradeCount">0 trades</span></div>
+      <div class="form-grid journal-form">
+        <div class="form-field"><label for="result">Outcome</label><select id="result"><option value="win">Win</option><option value="loss">Loss</option><option value="breakeven">Break-even</option></select></div>
+        <div class="form-field"><label for="pnl">Realized P&amp;L (₹, after fees)</label><input id="pnl" type="number" step="any" value="20"></div>
+        <div class="form-field full-width"><label for="memo">Setup / notes</label><input id="memo" maxlength="180" placeholder="Example: 15m trend; waited for confirmation"></div>
+      </div>
+      <div class="button-row"><button id="logTradeButton" class="button" type="button">Add journal entry</button><button id="exportButton" class="button button-secondary" type="button">Export CSV</button><button id="clearButton" class="button button-danger" type="button">Clear journal</button></div>
+      <div class="stats-grid journal-stats"><div class="stat"><span>Net P&amp;L</span><strong id="net">₹0</strong></div><div class="stat"><span>Win rate</span><strong id="winRate">0%</strong></div><div class="stat"><span>Positive trades</span><strong id="wins">0</strong></div></div>
+      <div class="table-wrap"><table><thead><tr><th>Date</th><th>Market</th><th>Side</th><th>Outcome</th><th>P&amp;L (₹)</th><th>Notes</th></tr></thead><tbody id="journalBody"><tr><td class="empty-cell" colspan="6">No trades recorded yet.</td></tr></tbody></table></div>
+      <p class="fine-print">Entries are saved in this browser using local storage. Export CSV backups regularly. Clearing browser data may erase the journal.</p>
+    </section>
+
+    <section id="integrations" class="card">
+      <div class="section-heading"><div><p class="label">OPTIONAL SERVER CONNECTIONS</p><h2>AI analysis & Delta Exchange account</h2></div><span class="badge badge-amber">SERVER REQUIRED</span></div>
+      <p class="muted">GitHub Pages can host the front end, but it cannot safely store private API secrets. A separate backend is included with this code package. Set it up only on a trusted server and never paste an API secret into this page.</p>
+      <div class="form-grid">
+        <div class="form-field full-width"><label for="backendUrl">Backend URL (from your server host)</label><input id="backendUrl" type="url" placeholder="https://your-tradedesk-backend.example.com"></div>
+        <div class="form-field full-width"><label for="backendToken">Private app access token (not your Delta API secret)</label><input id="backendToken" type="password" autocomplete="off" placeholder="Enter the APP_ACCESS_TOKEN you set on the backend"></div>
+      </div>
+      <div class="button-row"><button id="saveBackendSettings" class="button" type="button">Save connection</button><button id="testBackendButton" class="button button-secondary" type="button">Test backend</button><button id="connectDeltaButton" class="button button-secondary" type="button">Check Delta account</button><button id="aiAnalysisButton" class="button button-secondary" type="button">Request AI commentary</button></div>
+      <div class="integration-grid">
+        <div class="integration-tile"><span class="integration-icon">◎</span><div><strong>Backend</strong><p id="backendStatus">Not configured</p></div></div>
+        <div class="integration-tile"><span class="integration-icon">✦</span><div><strong>AI market commentary</strong><p id="aiStatus">Rule-based analysis works locally. A server AI key is optional.</p></div></div>
+        <div class="integration-tile"><span class="integration-icon">◈</span><div><strong>Delta Exchange</strong><p id="deltaStatus">Not connected. Read-only account check requires a secured backend.</p></div></div>
+      </div>
+      <div class="subpanel ai-output"><h3>Analysis commentary</h3><p id="aiAnalysisText" class="muted">Run technical analysis above. Local commentary will be displayed there. AI commentary can be requested after a backend is configured.</p></div>
+      <div class="notice notice-danger"><strong>Live real-money automation is deliberately locked.</strong> This release does not auto-place orders. The included server supports protected AI analysis and read-only Delta balance checks only. Automated live execution needs product/contract validation, stop-order handling, demo testing, per-day loss limits, and a deployed secured service. No order will be sent by this page.</div>
+      <p class="fine-print">Server docs: read README.md and .env.example before deployment. Delta credentials belong in backend environment variables, with read-only API permissions where possible.</p>
+    </section>
+
+    <footer>Educational software, not financial advice. Signals are rule-based; backtests are simplified historical simulations. Never assume a signal guarantees profit.</footer>
+  </main>
+</body>
+</html>
