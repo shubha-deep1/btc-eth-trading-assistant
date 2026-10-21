@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b1020">
+  <meta name="description" content="A responsive BTC and ETH trading planner with risk sizing and paper-trade journaling.">
+  <title>TradeDesk | BTC & ETH Trading Assistant</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <main class="app-shell">
+    <header class="app-header">
+      <div>
+        <p class="eyebrow">PERSONAL MARKET TOOLKIT</p>
+        <h1>Trade<span>Desk</span></h1>
+        <p class="subtitle">Plan the trade. Define the risk. Log the result.</p>
+      </div>
+      <span class="badge">PAPER TRADING · V1</span>
+    </header>
+
+    <section class="market-grid" aria-label="Market overview">
+      <article class="card market-card">
+        <p class="label">Bitcoin · BTC/USDT</p>
+        <p class="market-price" id="btcPrice">Loading…</p>
+        <p class="market-change" id="btcChange">Fetching public market data</p>
+      </article>
+      <article class="card market-card">
+        <p class="label">Ethereum · ETH/USDT</p>
+        <p class="market-price" id="ethPrice">Loading…</p>
+        <p class="market-change" id="ethChange">Fetching public market data</p>
+      </article>
+    </section>
+
+    <section class="card chart-card">
+      <div>
+        <p class="label">MARKET CHARTS</p>
+        <h2>Open TradingView charts</h2>
+        <p class="muted">Use your charting setup to confirm a trade before recording a plan.</p>
+      </div>
+      <div class="button-row">
+        <a class="button button-secondary" href="https://www.tradingview.com/chart/?symbol=BINANCE%3ABTCUSDT" target="_blank" rel="noopener noreferrer">BTC chart ↗</a>
+        <a class="button button-secondary" href="https://www.tradingview.com/chart/?symbol=BINANCE%3AETHUSDT" target="_blank" rel="noopener noreferrer">ETH chart ↗</a>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="section-heading">
+        <div>
+          <p class="label">RISK MANAGEMENT</p>
+          <h2>Trade risk calculator</h2>
+        </div>
+        <span class="badge badge-green">NO REAL ORDERS</span>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-field">
+          <label for="symbol">Market</label>
+          <select id="symbol"><option>ETH/USDT</option><option>BTC/USDT</option></select>
+        </div>
+        <div class="form-field">
+          <label for="side">Direction</label>
+          <select id="side"><option value="long">LONG</option><option value="short">SHORT</option></select>
+        </div>
+        <div class="form-field">
+          <label for="capital">Account capital (₹)</label>
+          <input id="capital" type="number" min="0" step="any" value="1000">
+        </div>
+        <div class="form-field">
+          <label for="risk">Risk per trade (%)</label>
+          <input id="risk" type="number" min="0.1" max="100" step="0.1" value="1">
+        </div>
+        <div class="form-field">
+          <label for="entry">Entry price (USDT)</label>
+          <input id="entry" type="number" min="0" step="any" value="2500">
+        </div>
+        <div class="form-field">
+          <label for="stop">Stop loss (USDT)</label>
+          <input id="stop" type="number" min="0" step="any" value="2480">
+        </div>
+        <div class="form-field">
+          <label for="target">Take profit (USDT)</label>
+          <input id="target" type="number" min="0" step="any" value="2540">
+        </div>
+        <div class="form-field">
+          <label for="leverage">Leverage (planning only)</label>
+          <select id="leverage">
+            <option value="1">1×</option><option value="2">2×</option><option value="3">3×</option>
+            <option value="5">5×</option><option value="10">10×</option><option value="20">20×</option>
+            <option value="50">50×</option><option value="75">75×</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label for="fx">USD → INR estimate</label>
+          <input id="fx" type="number" min="1" step="any" value="88">
+        </div>
+        <div class="form-field">
+          <label for="fee">Fee estimate per side (%)</label>
+          <input id="fee" type="number" min="0" step="0.01" value="0.05">
+        </div>
+      </div>
+
+      <div class="button-row">
+        <button id="calcButton" class="button" type="button">Calculate plan</button>
+        <button id="livePriceButton" class="button button-secondary" type="button">Use live price</button>
+      </div>
+      <p id="calcMessage" class="status-message" role="status">Edit the values and calculate to see a risk-based position plan.</p>
+
+      <div class="stats-grid">
+        <div class="stat"><span>Risk budget</span><strong id="riskOut">—</strong></div>
+        <div class="stat"><span>Reward / risk</span><strong id="rrOut">—</strong></div>
+        <div class="stat"><span>Position value</span><strong id="sizeOut">—</strong></div>
+        <div class="stat"><span>Estimated net target</span><strong id="profitOut">—</strong></div>
+        <div class="stat"><span>Estimated stop loss</span><strong id="lossOut">—</strong></div>
+        <div class="stat"><span>Estimated margin</span><strong id="marginOut">—</strong></div>
+      </div>
+      <p class="fine-print">Estimates only. Fees are approximate and funding, slippage, contract rules, and liquidation mechanics are not modeled. Leverage does not reduce underlying price risk.</p>
+    </section>
+
+    <section class="card">
+      <div class="section-heading">
+        <div>
+          <p class="label">PROCESS & DISCIPLINE</p>
+          <h2>Paper-trade journal</h2>
+        </div>
+        <span class="badge" id="tradeCount">0 trades</span>
+      </div>
+
+      <div class="form-grid journal-form">
+        <div class="form-field">
+          <label for="result">Outcome</label>
+          <select id="result"><option value="win">Win</option><option value="loss">Loss</option><option value="breakeven">Break-even</option></select>
+        </div>
+        <div class="form-field">
+          <label for="pnl">Realized P&amp;L (₹, after fees)</label>
+          <input id="pnl" type="number" step="any" value="20">
+        </div>
+        <div class="form-field full-width">
+          <label for="memo">Setup / notes</label>
+          <input id="memo" maxlength="180" placeholder="Example: 15m trend; waited for confirmation">
+        </div>
+      </div>
+      <div class="button-row">
+        <button id="logTradeButton" class="button" type="button">Add journal entry</button>
+        <button id="exportButton" class="button button-secondary" type="button">Export CSV</button>
+        <button id="clearButton" class="button button-danger" type="button">Clear journal</button>
+      </div>
+
+      <div class="stats-grid journal-stats">
+        <div class="stat"><span>Net P&amp;L</span><strong id="net">₹0</strong></div>
+        <div class="stat"><span>Win rate</span><strong id="winRate">0%</strong></div>
+        <div class="stat"><span>Positive trades</span><strong id="wins">0</strong></div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Date</th><th>Market</th><th>Side</th><th>Outcome</th><th>P&amp;L (₹)</th><th>Notes</th></tr></thead>
+          <tbody id="journalBody"><tr><td class="empty-cell" colspan="6">No trades recorded yet.</td></tr></tbody>
+        </table>
+      </div>
+      <p class="fine-print">Entries are saved in this browser using local storage. Export CSV backups regularly. Clearing browser data may erase the journal.</p>
+    </section>
+
+    <footer>Educational planning tool, not financial advice. Market data may be unavailable or delayed.</footer>
+  </main>
+</body>
+</html>
